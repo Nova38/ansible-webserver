@@ -1,0 +1,65 @@
+---
+- name: Set the index.html path
+  ansible.builtin.set_fact:
+    file_path: /var/www/html
+    vars_file: /var/www/html/vars.html
+    index_file: /var/www/html/index.html
+
+
+- name: Copy Vars.html
+  ansible.builtin.copy:
+    src: vars.html
+    dest: "{{ vars_file }}"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Add a link from index.html to vars.html
+  ignore_errors: "{{ ansible_check_mode }}"
+  ansible.builtin.lineinfile:
+    path: "{{ index_file }}"
+    insertafter: <EOF>
+    line: |
+      <a href=vars.html> Ansible Variables Page </>
+
+- name: Insert Hostname from Ansible facts
+  ignore_errors: "{{ ansible_check_mode }}"
+  ansible.builtin.lineinfile:
+    path: "{{ vars_file }}"
+    line: |
+      <p> My name is {{ ansible_hostname }}. </p>
+
+
+- name: Add a link from vars.html to index.html
+  ignore_errors: "{{ ansible_check_mode }}"
+  ansible.builtin.lineinfile:
+    path: "{{ vars_file }}"
+    insertafter: <EOF>
+    line: |
+      <a href=index.html> Back To Index.html <a/>
+
+- name: Gather facts on a file
+  ansible.builtin.stat:
+    path: /etc/hosts
+  register: i
+
+- name: Insert a line when the condition is true
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: i.stat.exists
+  ansible.builtin.lineinfile:
+    path: "{{ vars_file }}"
+    line: |
+      <p> File {{ i.stat.path }} exists </p>
+
+- name: Set a fact withing a roles
+  ansible.builtin.set_fact:
+    a_fact: The sky is blue
+
+
+- name: Add a link from vars.html to index.html
+  ignore_errors: "{{ ansible_check_mode }}"
+  ansible.builtin.lineinfile:
+    path: "{{ vars_file }}"
+    insertafter: <EOF>
+    line: |
+      <p> {{ a_fact }} </p>
