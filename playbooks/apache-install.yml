@@ -1,0 +1,36 @@
+---
+- name: Install and Configure Apache
+  hosts: webservers
+  become: true
+  become_user: root
+
+  vars:
+    index_file: /var/www/html/index.html
+
+  tasks:
+    - name: Install Apache
+      ansible.builtin.apt:
+        state: latest
+        update_cache: true
+        name:
+          - apache2
+    - name: Enable and Start Services
+      ansible.builtin.service:
+        name: apache2
+        enabled: true
+        state: started
+    - name: Remove The existing index.html
+      ansible.builtin.file:
+        path: "{{ index_file }}"
+        state: absent
+    - name: Create a new empty index.html file
+      ansible.builtin.file:
+        path: "{{ index_file }}"
+        state: touch
+        owner: root
+        group: root
+        mode: "0755"
+    - name: Add content to the index.html file
+      ansible.builtin.lineinfile:
+        path: "{{ index_file }}"
+        line: Hello Ansible World!
