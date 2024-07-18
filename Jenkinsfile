@@ -40,7 +40,7 @@ pipeline {
 
         stage('Install Apache & update website') {
             steps {
-                sh 'ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/website-install.yml'
+                sh 'ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/apache-install.yml'
             }
         }
         
