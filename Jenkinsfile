@@ -40,7 +40,9 @@ pipeline {
 
         stage('Install Apache & update website') {
             steps {
-                sh 'ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/apache-install.yml'
+                sh 'ansible-config  dump'
+                sh 'export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/apache-install.yml'
+                sh 'export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/website-update.yml'
             }
         }
         
