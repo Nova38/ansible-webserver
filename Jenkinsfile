@@ -2,6 +2,13 @@ pipeline {
     agent any
     stages {
 
+
+        stage('Delete the workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Installing Ansible') {
             steps {
                 script {
@@ -17,15 +24,10 @@ pipeline {
             }
         }
 
-        stage('Delete the workspace') {
-            steps {
-                cleanWs()
-            }
-        }
 
-        stage('Second Stage') {
+        stage('Download Ansible Code') {
             steps {
-                echo "Second stage"
+                git branch: 'main', credentialsId: 'nova38', url: 'git@github.com:Nova38/ansible-webserver.git'
             }
         }
 
