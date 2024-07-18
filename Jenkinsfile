@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {label: "agentfarm"}
+    environment {
+        KEY_FILE = "/home/ubuntu/.ssh/vm-instance-key.pem"
+        USER = 'ubuntu'
+    }
     stages {
 
 
@@ -34,20 +38,25 @@ pipeline {
             }
         }
 
-        stage('Third Stage') {
+        stage('Install Apache & update website') {
             steps {
-                echo "Third stage"
+                sh 'ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/apache-install.yml'
+            }
+        }
+        
+        stage('Test Website') {
+            steps {
+                sh 'ansible-playbook -u $USER --private-key $KEY_FILE $WORKSPACE/playbooks/apache-install.yml'
             }
         }
     }
-        post {
-
-            success {
-                slackSend color: 'warning', message: "Build ${env.JOB_NAME} ${env.BUILD_NUMBER} was successful! :)"
-            }
-
-            failure {
-                slackSend color: 'warning', message: "Build ${env.JOB_NAME} ${env.BUILD_NUMBER} failed :)"
-            }
+    post {
+        success {
+            slackSend color: 'warning', message: "Build ${env.JOB_NAME} ${env.BUILD_NUMBER} was successful! :)"
         }
+
+        failure {
+            slackSend color: 'warning', message: "Build ${env.JOB_NAME} ${env.BUILD_NUMBER} failed :)"
+        }
+    }
 }
