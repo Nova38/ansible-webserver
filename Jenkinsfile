@@ -28,6 +28,9 @@ pipeline {
         stage('Download Ansible Code') {
             steps {
                 git branch: 'main', credentialsId: 'Nova38', url: 'https://github.com/Nova38/ansible-webserver.git'
+                sh 'docker run --rm -v $WORKSPACE/playbooks:/data cytopia/ansible-lint:4 apache-install.yml'
+                sh 'docker run --rm -v $WORKSPACE/playbooks:/data cytopia/ansible-lint:4 website-update.yml'
+                sh 'docker run --rm -v $WORKSPACE/playbooks:/data cytopia/ansible-lint:4 website-test.yml'
             }
         }
 
