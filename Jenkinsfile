@@ -27,7 +27,7 @@ pipeline {
 
         stage('Download Ansible Code') {
             steps {
-                git branch: 'main', credentialsId: 'Nova38', url: 'git@github.com:Nova38/ansible-webserver.git'
+                git branch: 'main', credentialsId: 'Nova38', url: 'https://github.com/Nova38/ansible-webserver.git'
             }
         }
 
